@@ -1,6 +1,8 @@
 package de.julielab.dta.converter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.Arrays;
@@ -19,8 +21,8 @@ public class ConverterTest {
 
 	@Test
 	public void readDocumentTest() throws Exception {
-		File outputFile = File.createTempFile("fancy", "file");
-		Map<String, List<String>> file2classes = new HashMap<>();
+		final File outputFile = File.createTempFile("fancy", "file");
+		final Map<String, List<String>> file2classes = new HashMap<>();
 		try {
 			Converter.readDocument(new File(TEST_FILE), outputFile, true,
 					file2classes);
@@ -30,24 +32,24 @@ public class ConverterTest {
 							"Alte deutsche Lieder gesammelt von L. A. v. Arnim und Clemens Brentano.",
 							"Des Knaben Wunderhorn Alte deutsche Lieder L. Achim v. Arnim.",
 							"Clemens Brentano.",
-							"Heidelberg, bei Mohr u. Zimmer." }),
+					"Heidelberg, bei Mohr u. Zimmer." }),
 					FileUtils.readLines(outputFile));
 			assertTrue(file2classes.containsKey(TEST_FILE_NAME));
 			assertEquals(
 					Arrays.asList(new String[] { "Belletristik",
 							"Belletristik", "Wissenschaft" }),
-					file2classes.get(TEST_FILE_NAME));
-		} catch (Exception e) {
+							file2classes.get(TEST_FILE_NAME));
+		} catch (final Exception e) {
 			e.printStackTrace();
 			fail("Had exception!");
 		}
-		
+
 		//Now has to fail, due to entry in file2classes
 		boolean ok = false;
 		try {
 			Converter.readDocument(new File(TEST_FILE), outputFile, true,
 					file2classes);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			ok = true;
 		}
 		assertTrue("Read same file twice!", ok);

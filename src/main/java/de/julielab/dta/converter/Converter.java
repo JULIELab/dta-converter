@@ -20,34 +20,38 @@ import de.julielab.jcore.types.extensions.dta.DocumentClassification;
 
 public class Converter {
 
-//TODO: CLI
-	
-	
-	
-	static void readDocument(File inputFile, File outputFile, boolean normalize, Map<String,List<String>> file2classes) throws Exception{
-		CollectionReader reader = DTAUtils.getReader(inputFile.getCanonicalPath(), normalize);
-		CAS cas = CasCreationUtils.createCas((AnalysisEngineMetaData) reader.getMetaData()).getJCas().getCas();
+	static void readDocument(final File inputFile, final File outputFile,
+			final boolean normalize,
+			final Map<String, List<String>> file2classes) throws Exception {
+		final CollectionReader reader = DTAUtils.getReader(
+				inputFile.getCanonicalPath(), normalize);
+		final CAS cas = CasCreationUtils
+				.createCas((AnalysisEngineMetaData) reader.getMetaData())
+				.getJCas().getCas();
 		reader.getNext(cas);
-		JCas jcas = cas.getJCas();
+		final JCas jcas = cas.getJCas();
 		if (jcas.getDocumentText() == null)
-			throw new Exception("File "+inputFile+" has not document text!");
+			throw new Exception("File " + inputFile + " has not document text!");
 
-		if(file2classes != null){
-			List<String> classes = new ArrayList<>();
-			final FSIterator<Annotation> it = jcas.getAnnotationIndex(DocumentClassification.type).iterator();
+		if (file2classes != null) {
+			final List<String> classes = new ArrayList<>();
+			final FSIterator<Annotation> it = jcas.getAnnotationIndex(
+					DocumentClassification.type).iterator();
 			while (it.hasNext()) {
-				final DocumentClassification classification = (DocumentClassification) it.next();
+				final DocumentClassification classification = (DocumentClassification) it
+						.next();
 				classes.add(classification.getClassification());
 			}
-			if(file2classes.containsKey(inputFile.getName()))
-				throw new Exception("Can not process file "+inputFile.getCanonicalPath()+" twice!");
+			if (file2classes.containsKey(inputFile.getName()))
+				throw new Exception("Can not process file "
+						+ inputFile.getCanonicalPath() + " twice!");
 			file2classes.put(inputFile.getName(), classes);
 		}
-		
-		try (BufferedWriter outFile = new BufferedWriter(new FileWriter(outputFile))) {
+
+		try (BufferedWriter outFile = new BufferedWriter(new FileWriter(
+				outputFile))) {
 			outFile.write(jcas.getDocumentText());
 		}
 	}
-	
-	
+
 }
