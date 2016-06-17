@@ -3,9 +3,6 @@ package de.julielab.dta.converter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.uima.analysis_engine.metadata.AnalysisEngineMetaData;
 import org.apache.uima.cas.CAS;
@@ -16,13 +13,14 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.util.CasCreationUtils;
 
 import de.julielab.jcore.reader.dta.util.DTAUtils;
-import de.julielab.jcore.types.extensions.dta.DocumentClassification;
+import de.julielab.jcore.types.extensions.dta.DTAClassification;
+import de.julielab.jcore.types.extensions.dta.Header;
 
 public class Converter {
 
 	static void readDocument(final File inputFile, final File outputFile,
-			final boolean normalize,
-			final Map<String, List<String>> file2classes) throws Exception {
+			final boolean normalize, FileWriter metas)
+			throws Exception {
 		final CollectionReader reader = DTAUtils.getReader(
 				inputFile.getCanonicalPath(), normalize);
 		final CAS cas = CasCreationUtils
@@ -30,22 +28,29 @@ public class Converter {
 				.getJCas().getCas();
 		reader.getNext(cas);
 		final JCas jcas = cas.getJCas();
+		
+		//happens for non german texts
 		if (jcas.getDocumentText() == null)
-			throw new Exception("File " + inputFile + " has not document text!");
+			return;
 
-		if (file2classes != null) {
-			final List<String> classes = new ArrayList<>();
+		if (metas != null) {
+			String DTAClass = "N.A.", DTASubClass = "N.A.", year = "N.A.";
+
 			final FSIterator<Annotation> it = jcas.getAnnotationIndex(
-					DocumentClassification.type).iterator();
-			while (it.hasNext()) {
-				final DocumentClassification classification = (DocumentClassification) it
+					DTAClassification.type).iterator();
+			if (it.hasNext()) {
+				final DTAClassification classification = (DTAClassification) it
 						.next();
-				classes.add(classification.getClassification());
+				DTAClass = classification.getClassification();
+				DTASubClass = classification.getSubClassification();
 			}
-			if (file2classes.containsKey(inputFile.getName()))
-				throw new Exception("Can not process file "
-						+ inputFile.getCanonicalPath() + " twice!");
-			file2classes.put(inputFile.getName(), classes);
+
+			final Header header = (Header) jcas.getAnnotationIndex(Header.type)
+					.iterator().next();
+			year = header.getYear();
+
+			metas.write(new MetaInformation(CLI.removeEnd(inputFile.getName()),
+					DTAClass, DTASubClass, year).toCSV()+"\n");
 		}
 
 		try (BufferedWriter outFile = new BufferedWriter(new FileWriter(
@@ -53,5 +58,4 @@ public class Converter {
 			outFile.write(jcas.getDocumentText());
 		}
 	}
-
 }

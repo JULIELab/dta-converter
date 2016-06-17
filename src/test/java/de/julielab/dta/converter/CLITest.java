@@ -3,11 +3,10 @@ package de.julielab.dta.converter;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -46,7 +45,7 @@ public class CLITest {
 	public void getOutputFilesTest() throws IOException {
 		final String outputPath = Files.createTempDir().getCanonicalPath();
 		final List<File> expected = Arrays.asList(new File[] { new File(
-				outputPath, TEST_NAME + ".txt") });
+				outputPath, TEST_NAME) });
 		final List<File> actual = CLI.getOutputFiles(outputPath,
 				Arrays.asList(new File[] { new File(TEST_FILE) }));
 		assertEquals(expected, actual);
@@ -57,25 +56,52 @@ public class CLITest {
 	}
 
 	@Test
-	public void writeFile2ClassesTest() throws IOException {
-		final File metaFile = new File(Files.createTempDir(), "foo");
-		final Map<String, List<String>> file2classes = new HashMap<>();
-		file2classes.put("name1", Arrays.asList(new String[] { "a1", "b1" }));
-		file2classes.put("name2", Arrays.asList(new String[] { "a2", "b2" }));
-		CLI.writeFile2Classes(file2classes, metaFile);
+	public void mainTest() throws Exception {
+		final String input = TEST_FILE;
+		final String output = Files.createTempDir().getCanonicalPath();
+		final String meta = new File(Files.createTempDir(), "foo")
+				.getCanonicalPath();
+		CLI.main(new String[] { "-i", input, "-o", output, "-m", meta });
 
-		final Map<String, List<String>> readBackFile2Classes = new HashMap<>();
-		for (final String line : FileUtils.readLines(metaFile)) {
-			final String[] parts = line.split(";");
-			final List<String> value = Arrays.asList(Arrays.copyOfRange(parts,
-					1, parts.length));
-			readBackFile2Classes.put(parts[0], value);
-		}
-		assertEquals(file2classes, readBackFile2Classes);
+		//Meta
+		final List<String> lines = FileUtils.readLines(new File(meta));
+		assertEquals(MetaInformation.CSV_HEADER, lines.get(0));
+		assertEquals(
+				"short-arnim_wunderhorn01_1806;Belletristik;Lyrik;1806",
+				lines.get(1));
 
-		//can not overwrite existing file
-		exception.expect(IllegalArgumentException.class);
-		CLI.writeFile2Classes(file2classes, metaFile);
+		//Text
+		assertEquals(
+				Arrays.asList(new String[] {
+						"Des Knaben Wunderhorn.",
+						"Alte deutsche Lieder gesammelt von L. A. v. Arnim und Clemens Brentano.",
+						"Des Knaben Wunderhorn Alte deutsche Lieder L. Achim v. Arnim.",
+						"Clemens Brentano.", "Heidelberg, bei Mohr u. Zimmer." }),
+						FileUtils.readLines(new File(output, TEST_NAME)));
 	}
 
+	@Test
+	public void writeMetaInformationTest() throws IOException {
+		final File metaFile = new File(Files.createTempDir(), "foo");
+
+		FileWriter fw = CLI.writeMetaInformation(metaFile);
+		fw.close();
+		List<String> lines = FileUtils.readLines(metaFile);
+		assertEquals(MetaInformation.CSV_HEADER, lines.get(0));
+	
+
+		//delete and recreate
+		metaFile.delete();
+		metaFile.getParentFile().delete();
+		fw = CLI.writeMetaInformation(metaFile);
+		fw.close();
+		lines = FileUtils.readLines(metaFile);
+		assertEquals(MetaInformation.CSV_HEADER, lines.get(0));
+	
+		
+		//can not overwrite existing file
+		exception.expect(IllegalArgumentException.class);
+		fw = CLI.writeMetaInformation(metaFile);
+		fw.close();
+	}
 }
