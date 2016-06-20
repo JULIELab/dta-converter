@@ -16,11 +16,11 @@ public class ConverterTest {
 			+ TEST_FILE_NAME;
 
 	@Test
-	public void readDocumentTest() throws Exception {
+	public void readDocumentNormalizeTest() throws Exception {
 		final File outputFile = File.createTempFile("fancy", "file");
 		try(FileWriter metas = new FileWriter(File.createTempFile("meta", "file"))) {
 			Converter
-					.readDocument(new File(TEST_FILE), outputFile, true, metas);
+					.readDocument(new File(TEST_FILE), outputFile, Mode.NORMALIZE, metas);
 			assertEquals(
 					Arrays.asList(new String[] {
 							"Des Knaben Wunderhorn.",
@@ -28,6 +28,23 @@ public class ConverterTest {
 							"Des Knaben Wunderhorn Alte deutsche Lieder L. Achim v. Arnim.",
 							"Clemens Brentano.",
 							"Heidelberg, bei Mohr u. Zimmer." }),
+					FileUtils.readLines(outputFile));
+		} catch (final Exception e) {
+			e.printStackTrace();
+			fail("Had exception!");
+		}
+	}
+	
+	@Test
+	public void readDocumentLemmatizeTest() throws Exception {
+		final File outputFile = File.createTempFile("fancy", "file");
+		try(FileWriter metas = new FileWriter(File.createTempFile("meta", "file"))) {
+			Converter
+					.readDocument(new File(TEST_FILE), outputFile, Mode.LEMMATIZE, metas);
+			assertEquals(
+					Arrays.asList(new String[] {
+							"d Knabe Wunderhorn .","alt deutsch Lied sammeln von L. A. v. Arnim und Clemens Brentano .",
+							"d Knabe Wunderhorn alt deutsch Lied L. Achim v. Arnim .","clemens brentano .","Heidelberg , bei Mohr u. Zimmer ."}),
 					FileUtils.readLines(outputFile));
 		} catch (final Exception e) {
 			e.printStackTrace();

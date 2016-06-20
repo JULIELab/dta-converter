@@ -75,16 +75,26 @@ public class CLI {
 	@Parameter(names = { "--metafile", "-m" }, required = true, description = "File to store meta information")
 	String meta;
 
-	@Parameter(names = { "--normalize", "-n" }, required = false, arity = 1, description = "Normalize input")
+	@Parameter(names = { "--normalize", "-n" }, required = false, description = "Normalize input")
 	boolean normalize = true;
+	
+	@Parameter(names = { "--lemmatize", "-l" }, required = false, description = "Lemmatize input")
+	boolean lemmatize = false;
 
 	private void run() throws Exception {
+		Mode mode;
+		if(lemmatize)
+			mode = Mode.LEMMATIZE;
+		else if(normalize)
+			mode = Mode.NORMALIZE;
+		else
+			throw new IllegalArgumentException("Don't know what to do :(");
 		final List<File> inputFiles = getInputFiles(input);
 		final List<File> outputFiles = getOutputFiles(output, inputFiles);
 		try (FileWriter metaInformation = writeMetaInformation(new File(meta))) {
 			for (int i = 0; i < inputFiles.size(); ++i)
 				Converter.readDocument(inputFiles.get(i), outputFiles.get(i),
-						normalize, metaInformation);
+						mode, metaInformation);
 		}
 	}
 	
