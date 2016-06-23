@@ -26,7 +26,7 @@ public class CLITest {
 			+ TEST_SUFFIX;
 	private static final String BAD_TEST_PATH = "src/test/resources/badfiles";
 
-	private static final String EXPECTED_META = "short-arnim_wunderhorn01_1806\tBelletristik\tLyrik\t1806\tFrankfurt;Heidelberg\tMohr u: Zimmer";
+	static final String EXPECTED_META = "short-arnim_wunderhorn01_1806\tBelletristik\tLyrik\t1806\tFrankfurt;Heidelberg\tMohr u: Zimmer";
 
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();

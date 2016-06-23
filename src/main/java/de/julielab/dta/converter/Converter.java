@@ -31,8 +31,8 @@ public class Converter {
 		final String[] s = new String[sa.size()];
 		sa.copyToArray(0, s, 0, sa.size());
 		Arrays.sort(s);
-		for (final String element : s)
-			element.replaceAll(";", ",");
+		for (int i = 0; i < s.length; ++i)
+			s[i] = s[i].replaceAll(";", ",");
 		return SC_JOINER.join(s);
 	}
 
@@ -51,22 +51,19 @@ public class Converter {
 			return;
 
 		if (metas != null) {
-			String DTAClass = "N.A.", DTASubClass = "N.A.", year = "N.A.", pubPlaces = "N.A.", publisher = "N.A.";
-
 			final FSIterator<Annotation> it = jcas.getAnnotationIndex(
 					DTAClassification.type).iterator();
-			if (it.hasNext()) {
-				final DTAClassification classification = (DTAClassification) it
-						.next();
-				DTAClass = classification.getClassification();
-				DTASubClass = classification.getSubClassification();
-			}
+
+			final DTAClassification classification = (DTAClassification) it
+					.next();
+			String DTAClass = classification.getClassification();
+			String DTASubClass = classification.getSubClassification();
 
 			final Header header = (Header) jcas.getAnnotationIndex(Header.type)
 					.iterator().next();
-			year = header.getYear();
-			pubPlaces = asSortedString(header.getPublicationPlaces());
-			publisher = asSortedString(header.getPublishers());
+			String year = header.getYear();
+			String pubPlaces = asSortedString(header.getPublicationPlaces());
+			String publisher = asSortedString(header.getPublishers());
 
 			metas.write(new MetaInformation(CLI.removeEnd(inputFile.getName()),
 					DTAClass, DTASubClass, year, pubPlaces, publisher).toCSV()

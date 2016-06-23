@@ -23,8 +23,8 @@ public class CLI {
 				if (f.isDirectory() || !f.getName().endsWith(".tcf.xml"))
 					throw new IllegalArgumentException(
 							f
-							+ " can not be parsed as tcf.xml, yet is contained in "
-							+ input);
+									+ " can not be parsed as tcf.xml, yet is contained in "
+									+ input);
 				inputFiles.add(f);
 			}
 		return inputFiles;
