@@ -26,6 +26,8 @@ public class CLITest {
 			+ TEST_SUFFIX;
 	private static final String BAD_TEST_PATH = "src/test/resources/badfiles";
 
+	private static final String EXPECTED_META = "short-arnim_wunderhorn01_1806\tBelletristik\tLyrik\t1806\tFrankfurt;Heidelberg\tMohr u: Zimmer";
+
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 
@@ -67,7 +69,7 @@ public class CLITest {
 		final List<String> lines = FileUtils.readLines(new File(meta));
 		assertEquals(MetaInformation.CSV_HEADER, lines.get(0));
 		assertEquals(
-				"short-arnim_wunderhorn01_1806;Belletristik;Lyrik;1806",
+				EXPECTED_META,
 				lines.get(1));
 
 		//Text
@@ -92,7 +94,7 @@ public class CLITest {
 		final List<String> lines = FileUtils.readLines(new File(meta));
 		assertEquals(MetaInformation.CSV_HEADER, lines.get(0));
 		assertEquals(
-				"short-arnim_wunderhorn01_1806;Belletristik;Lyrik;1806",
+				EXPECTED_META,
 				lines.get(1));
 
 		//Text
