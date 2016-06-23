@@ -62,15 +62,13 @@ public class CLITest {
 		final String input = TEST_FILE;
 		final String output = Files.createTempDir().getCanonicalPath();
 		final String meta = new File(Files.createTempDir(), "foo")
-				.getCanonicalPath();
+		.getCanonicalPath();
 		CLI.main(new String[] { "-i", input, "-o", output, "-m", meta });
 
 		//Meta
 		final List<String> lines = FileUtils.readLines(new File(meta));
 		assertEquals(MetaInformation.CSV_HEADER, lines.get(0));
-		assertEquals(
-				EXPECTED_META,
-				lines.get(1));
+		assertEquals(EXPECTED_META, lines.get(1));
 
 		//Text
 		assertEquals(
@@ -79,30 +77,31 @@ public class CLITest {
 						"Alte deutsche Lieder gesammelt von L. A. v. Arnim und Clemens Brentano.",
 						"Des Knaben Wunderhorn Alte deutsche Lieder L. Achim v. Arnim.",
 						"Clemens Brentano.", "Heidelberg, bei Mohr u. Zimmer." }),
-						FileUtils.readLines(new File(output, TEST_NAME)));
+				FileUtils.readLines(new File(output, TEST_NAME)));
 	}
-	
+
 	@Test
 	public void mainTestLemmatize() throws Exception {
 		final String input = TEST_FILE;
 		final String output = Files.createTempDir().getCanonicalPath();
 		final String meta = new File(Files.createTempDir(), "foo")
-				.getCanonicalPath();
-		CLI.main(new String[] { "-i", input, "-o", output, "-m", meta ,"-l"});
+		.getCanonicalPath();
+		CLI.main(new String[] { "-i", input, "-o", output, "-m", meta, "-l" });
 
 		//Meta
 		final List<String> lines = FileUtils.readLines(new File(meta));
 		assertEquals(MetaInformation.CSV_HEADER, lines.get(0));
-		assertEquals(
-				EXPECTED_META,
-				lines.get(1));
+		assertEquals(EXPECTED_META, lines.get(1));
 
 		//Text
 		assertEquals(
 				Arrays.asList(new String[] {
-						"d Knabe Wunderhorn .","alt deutsch Lied sammeln von L. A. v. Arnim und Clemens Brentano .",
-						"d Knabe Wunderhorn alt deutsch Lied L. Achim v. Arnim .","clemens brentano .","Heidelberg , bei Mohr u. Zimmer ."}),
-			FileUtils.readLines(new File(output, TEST_NAME)));
+						"d Knabe Wunderhorn .",
+						"alt deutsch Lied sammeln von L. A. v. Arnim und Clemens Brentano .",
+						"d Knabe Wunderhorn alt deutsch Lied L. Achim v. Arnim .",
+						"clemens brentano .",
+						"Heidelberg , bei Mohr u. Zimmer ." }),
+				FileUtils.readLines(new File(output, TEST_NAME)));
 	}
 
 	@Test
@@ -113,7 +112,6 @@ public class CLITest {
 		fw.close();
 		List<String> lines = FileUtils.readLines(metaFile);
 		assertEquals(MetaInformation.CSV_HEADER, lines.get(0));
-	
 
 		//delete and recreate
 		metaFile.delete();
@@ -122,8 +120,7 @@ public class CLITest {
 		fw.close();
 		lines = FileUtils.readLines(metaFile);
 		assertEquals(MetaInformation.CSV_HEADER, lines.get(0));
-	
-		
+
 		//can not overwrite existing file
 		exception.expect(IllegalArgumentException.class);
 		fw = CLI.writeMetaInformation(metaFile);

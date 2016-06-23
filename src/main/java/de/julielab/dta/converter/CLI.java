@@ -23,8 +23,8 @@ public class CLI {
 				if (f.isDirectory() || !f.getName().endsWith(".tcf.xml"))
 					throw new IllegalArgumentException(
 							f
-									+ " can not be parsed as tcf.xml, yet is contained in "
-									+ input);
+							+ " can not be parsed as tcf.xml, yet is contained in "
+							+ input);
 				inputFiles.add(f);
 			}
 		return inputFiles;
@@ -39,7 +39,7 @@ public class CLI {
 			throw new IllegalArgumentException(output + " is not empty!");
 		final List<File> outputFiles = new ArrayList<>();
 		for (final File f : inputFiles) {
-			String name = removeEnd(f.getName());
+			final String name = removeEnd(f.getName());
 			outputFiles.add(new File(output, name));
 		}
 		return outputFiles;
@@ -56,12 +56,16 @@ public class CLI {
 		cli.run();
 	}
 
+	static String removeEnd(final String name) {
+		return name.substring(0, name.lastIndexOf(".tcf.xml"));
+	}
+
 	static FileWriter writeMetaInformation(final File metaFile)
 			throws IOException {
 		if (metaFile.exists())
 			throw new IllegalArgumentException(metaFile + " already exists!");
 		metaFile.getAbsoluteFile().getParentFile().mkdirs();
-		FileWriter fw = new FileWriter(metaFile);
+		final FileWriter fw = new FileWriter(metaFile);
 		fw.write(MetaInformation.CSV_HEADER + "\n");
 		return fw;
 	}
@@ -77,15 +81,15 @@ public class CLI {
 
 	@Parameter(names = { "--normalize", "-n" }, required = false, description = "Normalize input")
 	boolean normalize = true;
-	
+
 	@Parameter(names = { "--lemmatize", "-l" }, required = false, description = "Lemmatize input")
 	boolean lemmatize = false;
 
 	private void run() throws Exception {
 		Mode mode;
-		if(lemmatize)
+		if (lemmatize)
 			mode = Mode.LEMMATIZE;
-		else if(normalize)
+		else if (normalize)
 			mode = Mode.NORMALIZE;
 		else
 			throw new IllegalArgumentException("Don't know what to do :(");
@@ -96,9 +100,5 @@ public class CLI {
 				Converter.readDocument(inputFiles.get(i), outputFiles.get(i),
 						mode, metaInformation);
 		}
-	}
-	
-	static String removeEnd(String name){
-		return name.substring(0, name.lastIndexOf(".tcf.xml"));
 	}
 }

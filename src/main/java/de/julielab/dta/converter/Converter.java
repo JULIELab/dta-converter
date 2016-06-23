@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Iterator;
+
 import org.apache.uima.analysis_engine.metadata.AnalysisEngineMetaData;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.FSIterator;
@@ -26,17 +27,17 @@ import de.julielab.jcore.types.extensions.dta.Header;
 public class Converter {
 	private static final Joiner SC_JOINER = Joiner.on(";");
 
-	static final String asSortedString(StringArray sa) {
-		String[] s = new String[sa.size()];
+	static final String asSortedString(final StringArray sa) {
+		final String[] s = new String[sa.size()];
 		sa.copyToArray(0, s, 0, sa.size());
 		Arrays.sort(s);
-		for(int i=0; i<s.length; ++i)
-			s[i].replaceAll(";", ",");
+		for (final String element : s)
+			element.replaceAll(";", ",");
 		return SC_JOINER.join(s);
 	}
 
 	static void readDocument(final File inputFile, final File outputFile,
-			final Mode mode, FileWriter metas) throws Exception {
+			final Mode mode, final FileWriter metas) throws Exception {
 		final CollectionReader reader = DTAUtils.getReader(
 				inputFile.getCanonicalPath(), mode.equals(Mode.NORMALIZE));
 		final CAS cas = CasCreationUtils
@@ -78,12 +79,14 @@ public class Converter {
 			text = jcas.getDocumentText();
 			break;
 		case LEMMATIZE:
-			StringBuilder sb = new StringBuilder(jcas.getDocumentText()
+			final StringBuilder sb = new StringBuilder(jcas.getDocumentText()
 					.length());
-			Iterator<Sentence> it = JCasUtil.iterator(jcas, Sentence.class);
+			final Iterator<Sentence> it = JCasUtil.iterator(jcas,
+					Sentence.class);
 			while (it.hasNext()) {
-				Sentence s = it.next();
-				for (Token t : JCasUtil.selectCovered(jcas, Token.class, s))
+				final Sentence s = it.next();
+				for (final Token t : JCasUtil.selectCovered(jcas, Token.class,
+						s))
 					sb.append(t.getLemma().getValue() + " ");
 				if (it.hasNext())
 					sb.replace(sb.length() - 1, sb.length(), "\n");
