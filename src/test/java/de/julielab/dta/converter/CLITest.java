@@ -63,7 +63,7 @@ public class CLITest {
 		final String output = Files.createTempDir().getCanonicalPath();
 		final String meta = new File(Files.createTempDir(), "foo")
 		.getCanonicalPath();
-		CLI.main(new String[] { "-i", input, "-o", output, "-m", meta });
+		CLI.main(new String[] { "-i", input, "-o", output, "-m", meta, "--oldFormat" });
 
 		//Meta
 		final List<String> lines = FileUtils.readLines(new File(meta));
@@ -76,7 +76,7 @@ public class CLITest {
 						"Des Knaben Wunderhorn.",
 						"Alte deutsche Lieder gesammelt von L. A. v. Arnim und Clemens Brentano.",
 						"Des Knaben Wunderhorn Alte deutsche Lieder L. Achim v. Arnim.",
-						"Clemens Brentano.", "Heidelberg, bei Mohr u. Zimmer." }),
+						"Clemens Brentano.", "Heidelberg, bei Mohr u. Zimmer."}),
 				FileUtils.readLines(new File(output, TEST_NAME)));
 	}
 
@@ -86,7 +86,7 @@ public class CLITest {
 		final String output = Files.createTempDir().getCanonicalPath();
 		final String meta = new File(Files.createTempDir(), "foo")
 		.getCanonicalPath();
-		CLI.main(new String[] { "-i", input, "-o", output, "-m", meta, "-l" });
+		CLI.main(new String[] { "-i", input, "-o", output, "-m", meta, "-l", "--oldFormat"});
 
 		//Meta
 		final List<String> lines = FileUtils.readLines(new File(meta));
@@ -100,7 +100,7 @@ public class CLITest {
 						"alt deutsch Lied sammeln von L. A. v. Arnim und Clemens Brentano .",
 						"d Knabe Wunderhorn alt deutsch Lied L. Achim v. Arnim .",
 						"clemens brentano .",
-						"Heidelberg , bei Mohr u. Zimmer ." }),
+						"Heidelberg , bei Mohr u. Zimmer . foo"}),
 				FileUtils.readLines(new File(output, TEST_NAME)));
 	}
 

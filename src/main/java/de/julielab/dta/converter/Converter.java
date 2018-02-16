@@ -37,9 +37,9 @@ public class Converter {
 	}
 
 	static void readDocument(final File inputFile, final File outputFile,
-			final Mode mode, final FileWriter metas) throws Exception {
+			final Mode mode, final FileWriter metas, final boolean format2017) throws Exception {
 		final CollectionReader reader = DTAUtils.getReader(
-				inputFile.getCanonicalPath(), mode.equals(Mode.NORMALIZE));
+				inputFile.getCanonicalPath(), mode.equals(Mode.NORMALIZE), format2017);
 		final CAS cas = CasCreationUtils
 				.createCas((AnalysisEngineMetaData) reader.getMetaData())
 				.getJCas().getCas();
@@ -51,14 +51,15 @@ public class Converter {
 			return;
 
 		if (metas != null) {
+			String dtaClass = null, dtaSubClass = null;
 			final FSIterator<Annotation> it = jcas.getAnnotationIndex(
 					DTAClassification.type).iterator();
-
-			final DTAClassification classification = (DTAClassification) it
-					.next();
-			String DTAClass = classification.getClassification();
-			String DTASubClass = classification.getSubClassification();
-
+			if (it.hasNext()) {
+				final DTAClassification classification = (DTAClassification) it
+						.next();
+				dtaClass = classification.getClassification();
+				dtaSubClass = classification.getSubClassification();
+			}
 			final Header header = (Header) jcas.getAnnotationIndex(Header.type)
 					.iterator().next();
 			String year = header.getYear();
@@ -66,7 +67,7 @@ public class Converter {
 			String publisher = asSortedString(header.getPublishers());
 
 			metas.write(new MetaInformation(CLI.removeEnd(inputFile.getName()),
-					DTAClass, DTASubClass, year, pubPlaces, publisher).toCSV()
+					dtaClass, dtaSubClass, year, pubPlaces, publisher).toCSV()
 					+ "\n");
 		}
 

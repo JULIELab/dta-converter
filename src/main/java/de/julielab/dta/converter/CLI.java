@@ -84,6 +84,9 @@ public class CLI {
 
 	@Parameter(names = { "--lemmatize", "-l" }, required = false, description = "Lemmatize input")
 	boolean lemmatize = false;
+	
+	@Parameter(names = { "--oldFormat" }, required = false, description = "Use 2016 format without namespaces")
+	boolean oldFormat = false;
 
 	private void run() throws Exception {
 		Mode mode;
@@ -98,7 +101,7 @@ public class CLI {
 		try (FileWriter metaInformation = writeMetaInformation(new File(meta))) {
 			for (int i = 0; i < inputFiles.size(); ++i)
 				Converter.readDocument(inputFiles.get(i), outputFiles.get(i),
-						mode, metaInformation);
+						mode, metaInformation, !oldFormat);
 		}
 	}
 }

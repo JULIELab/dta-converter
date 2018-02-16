@@ -22,14 +22,14 @@ public class ConverterTest {
 		try (FileWriter metas = new FileWriter(File.createTempFile("meta",
 				"file"))) {
 			Converter.readDocument(new File(TEST_FILE), outputFile,
-					Mode.LEMMATIZE, metas);
+					Mode.LEMMATIZE, metas, false);
 			assertEquals(
 					Arrays.asList(new String[] {
 							"d Knabe Wunderhorn .",
 							"alt deutsch Lied sammeln von L. A. v. Arnim und Clemens Brentano .",
 							"d Knabe Wunderhorn alt deutsch Lied L. Achim v. Arnim .",
 							"clemens brentano .",
-							"Heidelberg , bei Mohr u. Zimmer ." }),
+							"Heidelberg , bei Mohr u. Zimmer . foo" }),
 							FileUtils.readLines(outputFile));
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -43,7 +43,7 @@ public class ConverterTest {
 		try (FileWriter metas = new FileWriter(File.createTempFile("meta",
 				"file"))) {
 			Converter.readDocument(new File(TEST_FILE), outputFile,
-					Mode.NORMALIZE, metas);
+					Mode.NORMALIZE, metas, false);
 			assertEquals(
 					Arrays.asList(new String[] {
 							"Des Knaben Wunderhorn.",
